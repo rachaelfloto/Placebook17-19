@@ -19,20 +19,22 @@ import com.raywenderlich.placebook.databinding.ActivityMapsBinding
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var map: GoogleMap
+    private lateinit var landmap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var binding: ActivityMapsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMapsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         setupLocationClient()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
+        landmap = googleMap
         getCurrentLocation()
     }
     override fun onRequestPermissionsResult(
@@ -68,7 +70,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         location.longitude
                     )
 
-                    map.addMarker(
+                    landmap.addMarker(
                         MarkerOptions().position(latLng)
                             .title("You are here!")
                     )
@@ -77,7 +79,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         16.0f
                     )
                     // 7
-                    map.moveCamera(update)
+                   landmap.moveCamera(update)
                 } else {
                     // 8
                     Log.e(TAG, "No location found")
