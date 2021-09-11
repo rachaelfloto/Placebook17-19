@@ -59,29 +59,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED) { requestLocationPermissions()
-        }
-        else {
+            PackageManager.PERMISSION_GRANTED) {
+            requestLocationPermissions()
+        } else {
+            landmap.isMyLocationEnabled = true
             fusedLocationClient.lastLocation.addOnCompleteListener {
                 val location = it.result
                 if (location != null) {
-                    val latLng = LatLng(
-                        location.latitude,
-                        location.longitude
-                    )
-
-                    landmap.addMarker(
-                        MarkerOptions().position(latLng)
-                            .title("You are here!")
-                    )
-                    val update = CameraUpdateFactory.newLatLngZoom(
-                        latLng,
-                        16.0f
-                    )
-                    // 7
-                   landmap.moveCamera(update)
+                    val latLng = LatLng(location.latitude, location.longitude)
+                    val update = CameraUpdateFactory.newLatLngZoom(latLng, 16.0f)
+                    landmap.moveCamera(update)
                 } else {
-                    // 8
                     Log.e(TAG, "No location found")
                 }
             }
