@@ -1,10 +1,13 @@
 // 1
 package com.raywenderlich.placebook.adapter
 import android.app.Activity
+import android.graphics.Bitmap
 import android.view.View
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.raywenderlich.placebook.databinding.ContentBookmarkInfoBinding
+
+
 // 2
 class BookmarkInfoWindowAdapter(context: Activity) :
     GoogleMap.InfoWindowAdapter {
@@ -18,9 +21,13 @@ class BookmarkInfoWindowAdapter(context: Activity) :
         return null
     }
     // 5
-    override fun getInfoContents(marker: Marker): View? {
+    override fun getInfoContents(marker: Marker): View {
+
         binding.title.text = marker.title ?: ""
         binding.phone.text = marker.snippet ?: ""
+        val imageView = binding.photo
+        imageView.setImageBitmap((marker.tag as Bitmap))
         return binding.root
+
     }
 }
