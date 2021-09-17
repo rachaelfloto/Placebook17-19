@@ -18,11 +18,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 
-import com.google.android.gms.maps.model.PointOfInterest
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPhotoRequest
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
@@ -54,6 +51,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         landmap = googleMap
         setupMapListeners()
+        createBookmarkMarkerObserver()
         getCurrentLocation()
     }
     private fun setupPlacesClient() {
@@ -211,4 +209,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     class PlaceInfo(val place: Place? = null,
                     val image: Bitmap? = null)
+    private fun addPlaceMarker(
+        bookmark: MapsViewModel.BookmarkMarkerView): Marker? {
+        val marker = landmap.addMarker(MarkerOptions()
+            .position(bookmark.location)
+            .icon(
+                BitmapDescriptorFactory.defaultMarker(
+                BitmapDescriptorFactory.HUE_AZURE))
+            .alpha(0.8f))
+        marker.tag = bookmark
+        return marker
+    }
+    private fun displayAllBookmarks(
+        bookmarks: List<MapsViewModel.BookmarkMarkerView>) {
+        bookmarks.forEach { addPlaceMarker(it) }
+    }
+    private fun createBookmarkMarkerObserver() {
+        // 1
+        mapsViewModel.getBookmarkMarkerViews()?.observe(
+            this, {
+                // 2
+                landmap.clear()
+                // 3
+                it?.let {
+                    displayAllBookmarks(it)
+                }
+            })
+    }
 }
