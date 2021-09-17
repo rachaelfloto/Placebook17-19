@@ -32,7 +32,7 @@
             android:value="AIzaSyDMJ2Bb8TDT6FClSjAxGbCxCDbs3Ms50EE" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".ui.MapsActivity"
             android:exported="true"
             android:label="PlaceBook">
             <intent-filter>

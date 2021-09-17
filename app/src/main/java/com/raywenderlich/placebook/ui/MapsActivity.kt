@@ -1,4 +1,4 @@
-package com.raywenderlich.placebook
+package com.raywenderlich.placebook.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ApiException
@@ -17,7 +18,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
@@ -25,8 +25,10 @@ import com.google.android.gms.maps.model.PointOfInterest
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPhotoRequest
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.raywenderlich.placebook.R
 import com.raywenderlich.placebook.adapter.BookmarkInfoWindowAdapter
 import com.raywenderlich.placebook.databinding.ActivityMapsBinding
+import com.raywenderlich.placebook.viewmodel.MapsViewModel
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -34,7 +36,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var binding: ActivityMapsBinding
     private lateinit var placesClient: PlacesClient
-
+    private val mapsViewModel by viewModels<MapsViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -170,7 +172,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }.addOnFailureListener { exception ->
                 if (exception is ApiException) {
                     val statusCode = exception.statusCode
-                    Log.e(TAG,
+                    Log.e(
+                        TAG,
                         "Place not found: " +
                                 exception.message + ", " +
                                 "statusCode: " + statusCode)
