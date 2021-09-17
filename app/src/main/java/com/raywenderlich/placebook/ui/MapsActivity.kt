@@ -19,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
 import com.google.android.gms.maps.model.PointOfInterest
@@ -29,6 +30,8 @@ import com.raywenderlich.placebook.R
 import com.raywenderlich.placebook.adapter.BookmarkInfoWindowAdapter
 import com.raywenderlich.placebook.databinding.ActivityMapsBinding
 import com.raywenderlich.placebook.viewmodel.MapsViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -50,12 +53,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         landmap = googleMap
-        landmap.setInfoWindowAdapter(BookmarkInfoWindowAdapter(this))
+        setupMapListeners()
         getCurrentLocation()
-        landmap.setOnPoiClickListener {
-            displayPoi(it)
-        }
-        }
+    }
     private fun setupPlacesClient() {
         Places.initialize(applicationContext,
             getString(R.string.google_maps_key))
@@ -188,6 +188,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .title(place.name)
                 .snippet(place.phoneNumber)
         )
-        marker?.tag = photo
+        marker?.tag = PlaceInfo(place, photo)
     }
+    private fun setupMapListeners() {
+        landmap.setInfoWindowAdapter(BookmarkInfoWindowAdapter(this))
+        landmap.setOnPoiClickListener {
+            displayPoi(it)
+        }
+        landmap.setOnInfoWindowClickListener {
+            handleInfoWindowClick(it)
+        }
+    }
+    private fun handleInfoWindowClick(marker: Marker) {
+        val placeInfo = (marker.tag as PlaceInfo)
+        if (placeInfo.place != null) {
+            GlobalScope.launch {
+                mapsViewModel.addBookmarkFromPlace(placeInfo.place,
+                    placeInfo.image)
+            }
+        }
+        marker.remove()
+    }
+    class PlaceInfo(val place: Place? = null,
+                    val image: Bitmap? = null)
 }
